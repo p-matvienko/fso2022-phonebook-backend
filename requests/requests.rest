@@ -1,13 +1,13 @@
 GET http://localhost:3001/api/persons
 
 ###
-POST http://localhost:3001/api/persons
+POST https://aged-glade-1903.fly.dev/api/persons
 Content-Type: application/json
 
 {
     "name": "Pavlo",
-    "number": "555-44-33"
+    "phone": "555-44-33"
 }
 
 ###
-DELETE http://localhost:3001/api/persons/1
+DELETE https://aged-glade-1903.fly.dev/api/persons/1
