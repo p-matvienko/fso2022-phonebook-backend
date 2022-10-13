@@ -10,4 +10,13 @@ Content-Type: application/json
 }
 
 ###
+PUT http://localhost:3001/api/persons/6346256a73da1aa82f9c9474
+Content-Type: application/json
+
+{
+    "name": "Pavlo",
+    "phone": "000-00-00"
+}
+
+###
 DELETE https://aged-glade-1903.fly.dev/api/persons/1
