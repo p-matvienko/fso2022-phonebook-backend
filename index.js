@@ -9,7 +9,7 @@ app.use(cors())
 app.use(express.static('build'))
 app.use(express.json())
 
-morgan.token('data', (request, response) => {
+morgan.token('data', (request) => {
     return JSON.stringify(request.body)
 })
 app.use(morgan(':method :url :status :res[content-length] - :response-time ms :data'))
@@ -33,12 +33,6 @@ app.get('/api/persons/:id', (request, response, next) => {
 app.post('/api/persons', (request, response, next) => {
     const body = request.body
 
-    if (!body.name || !body.phone) {
-        return response.status(400).json({
-            error: 'name and phone required'
-        })
-    }
-
     const person = new Person({
         name: body.name,
         phone: body.phone
@@ -59,7 +53,10 @@ app.put('/api/persons/:id', (request, response, next) => {
         phone: body.phone
     }
 
-    Person.findByIdAndUpdate(request.params.id, person, { new: true })
+    Person.findByIdAndUpdate(
+        request.params.id,
+        person,
+        { new: true, runValidators: true, context: 'query' })
         .then(updatedPerson => {
             response.json(updatedPerson)
         })
@@ -68,7 +65,7 @@ app.put('/api/persons/:id', (request, response, next) => {
 
 app.delete('/api/persons/:id', (request, response, next) => {
     Person.findByIdAndRemove(request.params.id)
-        .then(result => {
+        .then(() => {
             response.status(204).end()
         })
         .catch(error => next(error))
@@ -82,6 +79,7 @@ app.get('/info', (request, response, next) => {
         .catch(error => next(error))
 })
 
+// eslint-disable-next-line no-undef
 const PORT = process.env.PORT
 app.listen(PORT, () => {
     console.log(`Server running on port ${PORT}`)
@@ -89,6 +87,10 @@ app.listen(PORT, () => {
 
 const errorHandler = (error, request, response, next) => {
     console.log(error.message)
+
+    if (error.name == 'ValidationError') {
+        return response.status(400).json({ error: error.message })
+    }
     next(error)
 }
 
